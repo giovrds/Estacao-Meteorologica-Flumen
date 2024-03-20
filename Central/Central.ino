@@ -4,8 +4,6 @@ DFRobot_DHT11 DHT;
 
 //looping
 int tempo;
-int menor;
-int maior;
 
 //Sensor de água
 #define sensor A1
@@ -19,6 +17,7 @@ int valorumidadesolo;
 
 void setup() {
   Serial.begin(9600);
+
   //Sensor de luminosidade
   pinMode(foto, INPUT);
   pinMode(umidadesolo, INPUT);
@@ -27,12 +26,12 @@ void setup() {
 void loop() {
 
   //Sensor de água
-  //humidade = analogRead(sensor);
-  //Serial.print(" |Sensor de água: ");
-  //Serial.print(humidade);
-  //Serial.println("|");
-  //Serial.println();
-  //delay(55);
+  humidade = analogRead(sensor);
+  Serial.print(" |Sensor de água: ");
+  Serial.print(humidade);
+  Serial.println("|");
+  Serial.println();
+  delay(55);
 
   //DHT11 - temperatura e umidade
   DHT.read(DHT11_PIN);
@@ -49,39 +48,43 @@ void loop() {
   valor = analogRead(foto);
 
   if (valor < 400) {
-    Serial.print(" |Luminosidade baixa!|");
+    Serial.print(" |Luminosidade: baixa!|");
     Serial.println();
     Serial.println();
   } else {
-    Serial.print(" |Luminosidade alta!|");
+    Serial.print(" |Luminosidade: alta!|");
     Serial.println();
     Serial.println();
   }
 
   //umidade do solo
   valorumidadesolo = analogRead(umidadesolo);
+  
 
-  Serial.print("Valor Solo ");
+  Serial.print(" |Valor Solo: ");
   Serial.print(valorumidadesolo);
+  Serial.print("|");
+  Serial.println();
+  Serial.println();
 
   if (valorumidadesolo < 400) {
-    Serial.print(" Umidade: Baixa!");
+    Serial.print(" |Umidade do Solo: Baixa!|");
     Serial.println();
     Serial.println();
   }
   if (valorumidadesolo > 400 && valorumidadesolo < 700) {
-    Serial.print(" Umidade: Moderada");
+    Serial.print(" |Umidade do Solo: Moderada|");
     Serial.println();
     Serial.println();
   }
   if (valorumidadesolo > 700 && valorumidadesolo <1200) {
-    Serial.print(" Umidade: Adequada");
+    Serial.print(" |Umidade do Solo: Adequada|");
     Serial.println();
     Serial.println();
   }
-  delay(1000);
+  delay(5000);
   if (millis() - tempo > 60000) {  // 10000 milissegundos = 10 segundos
-    menor = maior = valorumidade solo = valor = 0;  // Limpar os valores das variáveis
+    valorumidadesolo = valor = 0;  // Limpar os valores das variáveis
   tempo = millis();
   }
 }
