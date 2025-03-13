@@ -2,6 +2,21 @@ import requests
 import psycopg2
 import time
 from datetime import datetime 
+import subprocess 
+
+#Inicia o código do ESP32 
+platformio_executable = r"C:\Users\Giovanna\.platformio\penv\Scripts\pio.exe"
+
+# Caminho do projeto PlatformIO
+platformio_project_path = r"C:\Users\Giovanna\Documents\PlatformIO\Projects\Medicoes-Estacao"
+
+print("Enviando código para o ESP32...")
+subprocess.run([platformio_executable, "run", "-t", "upload"], cwd=platformio_project_path, shell=True)
+
+print("Aguardando o ESP32 inicializar...")
+time.sleep(10)
+
+print("ESP32 pronto!")
 
 conexao_bd = psycopg2.connect(
     database="Estacao",
@@ -13,7 +28,7 @@ conexao_bd = psycopg2.connect(
 print("Status da conexão com o banco de dados:", conexao_bd.status)
 cursor = conexao_bd.cursor()
 
-esp32_ip = "192.168.4.1"
+esp32_ip = "192.168.22.99"
 
 while True:
     try:
@@ -23,33 +38,35 @@ while True:
            
             dados = response.json()  
 
-            
             umidade_solo = dados.get("umidade_solo", 0)
-            nivel_agua = dados.get("nivel_agua", 0)
+            chuva = dados.get("nivel_agua", 0)
             umidade_ar = dados.get("umidade_ar", 0)
             luminosidade = dados.get("luminosidade", 0)
             temperatura = dados.get("temperatura", 0)
-            uv = dados.get("uv", 0)
+            qualidade_ar = dados.get("uv", 0)
             pressao = dados.get("pressao", 0)
             altitude = dados.get("altitude", 0)
+            
 
-            timestamp = datetime.now()
+            data_hora = datetime.now()#antigo era timestamp
 
             print(f"Dados recebidos: {dados}")
-
+#antigo era insert into dados_sensor
             cursor.execute(
                 """
-                INSERT INTO dados_sensor (
-                    timestamp, valor, umidade_solo, nivel_agua, umidade_ar, 
-                    luminosidade, temperatura, uv, pressao, altitude
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO medicao_medicao (
+                    data_hora, temperatura, umidade_ar, umidade_solo, 
+                    luminosidade, chuva, qualidade_ar, pressao_atmosferica, altitude
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
-                (timestamp, 1, umidade_solo, nivel_agua, umidade_ar, 
-                 luminosidade, temperatura, uv, pressao, altitude)
+                (data_hora, temperatura, umidade_ar, umidade_solo, 
+                 luminosidade, chuva, qualidade_ar, pressao, altitude)
             )
             conexao_bd.commit()
             print("Dados inseridos no banco de dados com sucesso.")
-
+##linkar para que esse código inicie o do arduino
+##arrumar para que colete de 10 em 10 min e faça uma média quando bater 1 hora, enviando junto com a leitura de 1 em 1 hora
+##rezar para nao ter mais erros, dar um chute na annabola
         else:
             print(f"Erro na resposta do ESP32. Código HTTP: {response.status_code}")
 
