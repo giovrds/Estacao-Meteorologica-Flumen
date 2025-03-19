@@ -66,7 +66,6 @@ while True:
             print("Dados inseridos no banco de dados com sucesso.")
 ##linkar para que esse código inicie o do arduino
 ##arrumar para que colete de 10 em 10 min e faça uma média quando bater 1 hora, enviando junto com a leitura de 1 em 1 hora
-##rezar para nao ter mais erros, dar um chute na annabola
         else:
             print(f"Erro na resposta do ESP32. Código HTTP: {response.status_code}")
 
